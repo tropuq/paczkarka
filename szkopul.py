@@ -7,11 +7,18 @@
 # 	contest_name = "contest_name"
 # 	round_id = "round_id"
 
+# if __name__ == '__main__':
+# 	username = "czeslaw"
+# 	password = ""
+# 	contest_name = "25-oi-przygotowania"
+# 	round_id = "3589"
+
 if __name__ == '__main__':
-	username = "czeslaw"
-	password = ""
-	contest_name = "25-oi-przygotowania"
-	round_id = "3589"
+	with open("user.txt", "r") as user_file:
+		username = user_file.readline().strip()
+		password = user_file.readline().strip()
+		contest_name = user_file.readline().strip()
+		round_id = user_file.readline().strip()
 
 from bs4 import BeautifulSoup
 from bs4 import NavigableString
@@ -128,10 +135,9 @@ class Paczkarka:
 
 	def __compileStatement(self):
 		self.__myPrint("  Kompilowanie pliku " + self.latex_dir + self.latex_file)
-		subprocess.call(["cd " + self.latex_dir + " ; pdflatex --interaction nonstopmode " + self.latex_file],
-		                shell=True, stdout=self.OUT, stderr=self.OUT)
-		subprocess.call(["cd " + self.latex_dir + " ; pdflatex --interaction nonstopmode " + self.latex_file],
-			             shell=True, stdout=self.OUT, stderr=self.OUT)
+		for i in range(2):
+			subprocess.call(["cd " + self.latex_dir + " ; pdflatex --interaction nonstopmode " + self.latex_file],
+			                shell=True, stdout=self.OUT, stderr=self.OUT)
 		self.__makeDir(self.pdf_dir)
 		subprocess.call(["cp " + self.latex_dir + self.pdf_file + " " + self.pdf_dir],
 		                shell=True, stdout=self.OUT, stderr=self.OUT)
@@ -461,6 +467,7 @@ class Paczkarka:
 		self.contest_name = contest_name
 		self.round_id = round_id
 		
+		# aliases
 		self.szkopul = "https://szkopul.edu.pl/"
 		self.login_url = self.szkopul + "login/"
 		self.problemset_url = self.szkopul + "problemset/"
