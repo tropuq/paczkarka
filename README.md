@@ -1,9 +1,9 @@
 ## Potrzebne programy
-virtualenv, pandoc, pdflatex, convert, gcc, fpc i pewnie coś jeszcze
+pandoc, pdflatex, convert, gcc, fpc i pewnie coś jeszcze.
 
 ## Instalacja
 ```
-virtualenv env
+python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 python szkopul.py update
