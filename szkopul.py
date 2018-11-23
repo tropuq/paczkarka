@@ -272,8 +272,11 @@ class Paczkarka:
 		ret = []
 
 		test_num = 0
-		for i in bs.findAll(class_="grp-module grp-tbody has_original"):
-			ls = i.tr.findAll("td")
+		for i in bs.find(class_="table table-condensed table-hover").tbody.findAll("tr"):
+			if i.attrs.get("class", [""])[0] == "hidden":
+				continue
+			
+			ls = i.findAll("td")
 
 			name = ls[0].string
 			time = ls[1].input["value"]
@@ -281,7 +284,7 @@ class Paczkarka:
 			points = ls[3].input["value"]
 			in_url = ls[5].p.a["href"]
 			out_url = ls[6].p.a["href"]
-			test_id = i.tr.findAll("input")[-1]["value"]
+			test_id = i.findAll("input")[-1]["value"]
 			ret.append((name, time, memory, points, self.szkopul + in_url,
 			            self.szkopul + out_url))
 
@@ -294,7 +297,7 @@ class Paczkarka:
 			test_num += 1
 
 		if self.info["memoryLimit"] == "":
-			self.info["memoryLimit"] = str(int(int(ret[0][2]) / 1024)) + " MB"
+			self.info["memoryLimit"] = str(int(ret[0][2]) // 1024) + " MB"
 
 		form["round"] = self.round_id
 		form["short_name"] = short.strip()
