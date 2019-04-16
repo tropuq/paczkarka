@@ -1,5 +1,5 @@
 ## Potrzebne programy
-pandoc, pdflatex, convert, gcc, fpc i pewnie coś jeszcze.
+pandoc, pdflatex, convert, gcc, fpc, zip i pewnie coś jeszcze.
 
 ## Instalacja
 ```
@@ -15,7 +15,7 @@ Na koniec należy wpisać dane do logowania i dodawania zadań w kodzie.
 ```
 python szkopul.py gen -n "nazwa zadania" -pgzr
 python szkopul.py gen -n "nazwa zadania" -t "tag w przypadku dwuznacznosci" -pgzr
-python szkopul.py gen -n "nazwa zadania" -i "index w przypadku dwuznacznosci" -pgzra
+python szkopul.py gen -n "nazwa zadania" -i "index w przypadku dwuznacznosci" -pgzr
 ```
 
 ### Aktualizacja

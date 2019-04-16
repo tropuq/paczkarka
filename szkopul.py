@@ -105,7 +105,7 @@ class Paczkarka:
 		return ret
 
 	# download photo, repair name and convert to png
-	def __getPhoto(self, site, init_name): 
+	def __getPhoto(self, site, init_name):
 		url = site + init_name
 		ext = os.path.splitext(os.path.basename(init_name))[1]
 		self.__myPrint("Pobieranie obrazka " + init_name + " z " + url, indent=1)
@@ -258,7 +258,7 @@ class Paczkarka:
 		task_ID = sorted([(int(i.a["href"][35 + len(self.contest_name) : -8]), i.next_sibling.string) \
 		                  for i in bs.findAll(class_="field-name_link")])[-1]
 		return str(task_ID[0]), task_ID[1]
-		
+
 	def __getTestData(self, task_ID, short):
 		if self.loged == False:
 			self.__login()
@@ -275,7 +275,7 @@ class Paczkarka:
 		for i in bs.find(class_="table table-condensed table-hover").tbody.findAll("tr"):
 			if i.attrs.get("class", [""])[0] == "hidden":
 				continue
-			
+
 			ls = i.findAll("td")
 
 			name = ls[0].string
@@ -411,6 +411,8 @@ class Paczkarka:
 			self.__myPrint("Generowanie " + nm + ".out", indent=1)
 			subprocess.call([line], shell=True, stdout=self.OUT)
 
+		subprocess.call(["rm -f " + self.prog_dir + "a.out"], shell=True, stdout=self.OUT, stderr=self.OUT)
+
 	def __createConfig(self, test_data, limits):
 		self.__myPrint("Tworzenie pliku konfiguracyjnego")
 		save = ""
@@ -470,7 +472,7 @@ class Paczkarka:
 		self.password = password
 		self.contest_name = contest_name
 		self.round_id = round_id
-		
+
 		# aliases
 		self.szkopul = "https://szkopul.edu.pl/"
 		self.login_url = self.szkopul + "login/"
@@ -583,7 +585,7 @@ class Paczkarka:
 		self.task_dir = self.__tooFileName(search[2]) + "-" \
 		              + self.__tooFileName(search[3]) + "-" \
 		              + self.__tooFileName(self.info["prefix"])
-		self.latex_dir = self.task_dir + "/utils/latex/"
+		self.latex_dir = self.task_dir + "/doc/"
 		self.latex_file = self.info["prefix"] + ".tex"
 		self.pdf_dir = self.task_dir + "/doc/"
 		self.pdf_file = self.info["prefix"] + ".pdf"
@@ -609,7 +611,7 @@ class Paczkarka:
 			if argv.config:
 				self.__createConfig(test_data, argv.limits)
 			self.__deleteProblem(task_ID)
-		
+
 		if argv.zip:
 			self.__createArchive()
 
