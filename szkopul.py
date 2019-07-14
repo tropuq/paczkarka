@@ -209,7 +209,7 @@ class Paczkarka:
 		site = self.session.get(self.problem_url + "/site/?key=statement")
 		bs = BeautifulSoup(self.__htmlPreprocess(site.text), "html5lib")
 		# there is prepared pdf
-		if bs.find(text=re.compile("Możesz otworzyć treść zadania klikając")):
+		if site.text.find("/statement/") != -1:
 			site = self.session.get(self.problem_url + "/statement", stream=True)
 			self.__makeDir(self.pdf_dir)
 			with open(self.pdf_dir + self.pdf_file, "wb") as file:
