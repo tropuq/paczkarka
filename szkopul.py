@@ -56,6 +56,8 @@ if __name__ == "__main__":
 	parser.add_argument("-r", "--limits", help="dodaj limity czasu do pliku konfiguracyjnego", action="store_true")
 	parser.add_argument("-z", "--zip", help="spakuj paczkę do zipa", action="store_true")
 
+	parser.add_argument("-a", "--no_convert", help="nie konwertuj obrazków na latexa", action="store_true")
+
 	parser.add_argument("-v", "--verbose", help="wyświetl dodatkowe informacje na wyjściu", action="store_true")
 	parser.add_argument("-q", "--quiet", help="nic nie wyświetla na wyjściu", action="store_true")
 	argv = parser.parse_args()
@@ -143,7 +145,7 @@ class Paczkarka:
 		subprocess.call(["cp " + self.latex_dir + self.pdf_file + " " + self.pdf_dir],
 		                shell=True, stdout=self.OUT, stderr=self.OUT)
 
-	def __createPdf(self):
+	def __createPdf(self, no_convert=False):
 		site = self.session.get(self.problem_url + "/site/?key=statement")
 		bs = BeautifulSoup(site.text, "html5lib")
 		bs = bs.find("div", class_="nav-content")
@@ -183,18 +185,29 @@ class Paczkarka:
 
 		self.info["inter"] = re.sub(r"\"", r"{\\textquotedbl}", self.info["inter"])
 
-		template = ""
+		latex = None
 		with open("template.tex", "r") as temp:
-			template = temp.read()
-		latex = template
+			latex = temp.read()
 
-		matches = [match.span() for match in re.finditer(r"~[^~]*~", template)]
+		latex = re.sub(r"~([^~]*)~",
+			lambda m: self.info[m.groups()[0]],
+			latex)
 
-		for match in reversed(matches):
-			a = match[0]
-			b = match[1]
-			var = template[a + 1 : b - 1]
-			latex = template[: a] + self.info[var] + latex[b:]
+		if no_convert == False:
+			def modify_photo_src(s):
+				cmd = subprocess.Popen(["cd img2tex && ./img2tex untex {}".format("../{}/{}".format(self.latex_dir, s))],
+				                shell=True, stdout=subprocess.PIPE, stderr=self.OUT)
+				cmd.wait()
+				if cmd.returncode == 0:
+					cmd_out, _ = cmd.communicate()
+					s = "${}$".format(cmd_out[:-1].decode("utf-8"))
+				else:
+					s = "\\includegraphics{" + s + "}"
+				return s
+
+			latex = re.sub(r"\\includegraphics\{([^}]*)\}",
+				lambda m: modify_photo_src(m.groups()[0]),
+				latex)
 
 		self.__makeDir(self.latex_dir)
 		with open(self.latex_dir + self.latex_file, "w") as file:
@@ -204,7 +217,7 @@ class Paczkarka:
 		self.__compileStatement()
 
 	# downloads prepared pdf or creates from html
-	def __getStatement(self):
+	def __getStatement(self, no_convert):
 		self.__myPrint("Tworzenie treści")
 		site = self.session.get(self.problem_url + "/site/?key=statement")
 		bs = BeautifulSoup(self.__htmlPreprocess(site.text), "html5lib")
@@ -217,7 +230,7 @@ class Paczkarka:
 					file.write(chunk)
 		# no prepared pdf - create from html
 		else:
-			self.__createPdf()
+			self.__createPdf(no_convert)
 
 	def __createArchive(self):
 		self.__myPrint("Pakowanie paczki")
@@ -595,7 +608,7 @@ class Paczkarka:
 		self.problem_url = self.problemset_url + "problem/" + search[4]
 
 		if argv.pdf:
-			self.__getStatement()
+			self.__getStatement(argv.no_convert)
 
 		if argv.input or argv.output or argv.generate or argv.solutions or argv.config or argv.limits:
 			task_ID, short = self.__addProblem(search[4])

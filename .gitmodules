@@ -1,0 +1,3 @@
+[submodule "img2tex"]
+	path = img2tex
+	url = https://github.com/varqox/img2tex

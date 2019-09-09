@@ -3,6 +3,10 @@ pandoc, pdflatex, convert, gcc, fpc, zip i pewnie coś jeszcze.
 
 ## Instalacja
 ```
+git clone https://github.com/tropuq/paczkarka --recursive
+cd img2tex
+make img2tex
+cd ..
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
