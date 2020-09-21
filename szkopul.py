@@ -122,13 +122,13 @@ class Paczkarka:
 			self.__myPrint("Zmiana nazwy " + init_name + " na " + rep_name, indent=1)
 
 		self.__makeDir(self.latex_dir + rep_name)
-		self.__myPrint("Zapisywanie obrazka w " + self.latex_dir + rep_name, indent=1)
+		self.__myPrint('Zapisywanie obrazka w "' + self.latex_dir + rep_name + '"', indent=1)
 		with open(self.latex_dir + rep_name, "wb") as out:
 			shutil.copyfileobj(response.raw, out)
 
 		if ext != ".png":
 			self.__myPrint("Konwertowanie pliku " + ext + " do .png", indent=1)
-			subprocess.call(["convert " + self.latex_dir + rep_name + " " + self.latex_dir + final_name],
+			subprocess.call(['convert "' + self.latex_dir + rep_name + '" "' + self.latex_dir + final_name + '"'],
 			                shell=True, stdout=self.OUT, stderr=self.OUT)
 			os.remove(self.latex_dir + rep_name)
 
@@ -137,12 +137,12 @@ class Paczkarka:
 		return final_name
 
 	def __compileStatement(self):
-		self.__myPrint("Kompilowanie pliku " + self.latex_dir + self.latex_file, indent=1)
+		self.__myPrint('Kompilowanie pliku "' + self.latex_dir + self.latex_file + '"', indent=1)
 		for i in range(2):
-			subprocess.call(["cd " + self.latex_dir + " ; pdflatex --interaction nonstopmode " + self.latex_file],
+			subprocess.call(['cd "' + self.latex_dir + '" ; pdflatex --interaction nonstopmode "' + self.latex_file + '"'],
 			                shell=True, stdout=self.OUT, stderr=self.OUT)
 		self.__makeDir(self.pdf_dir)
-		subprocess.call(["cp " + self.latex_dir + self.pdf_file + " " + self.pdf_dir],
+		subprocess.call(['cp "' + self.latex_dir + self.pdf_file + '" "' + self.pdf_dir + '"'],
 		                shell=True, stdout=self.OUT, stderr=self.OUT)
 
 	def __createPdf(self, no_convert=False):
@@ -195,13 +195,14 @@ class Paczkarka:
 
 		if no_convert == False:
 			def modify_photo_src(s):
-				cmd = subprocess.Popen(["cd img2tex && ./img2tex untex {}".format("../{}/{}".format(self.latex_dir, s))],
+				cmd = subprocess.Popen(['cd img2tex && ./img2tex untex "{}"'.format("../{}/{}".format(self.latex_dir, s))],
 				                shell=True, stdout=subprocess.PIPE, stderr=self.OUT)
 				cmd.wait()
 				if cmd.returncode == 0:
 					cmd_out, _ = cmd.communicate()
 					s = "${}$".format(cmd_out[:-1].decode("utf-8"))
 				else:
+					self.__myPrint('\033[1;31mUntexing failed for "' + self.latex_dir + '/' + s +'"\033[m')
 					s = "\\includegraphics{" + s + "}"
 				return s
 
