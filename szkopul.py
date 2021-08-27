@@ -282,9 +282,8 @@ class Paczkarka:
 		bs = BeautifulSoup(self.__htmlPreprocess(site.text), "html5lib")
 
 		form = {}
-		ret = []
+		tests_desc = []
 
-		test_num = 0
 		for i in bs.find(class_="table table-condensed table-hover").tbody.findAll("tr"):
 			if i.attrs.get("class", [""])[0] == "hidden":
 				continue
@@ -297,35 +296,28 @@ class Paczkarka:
 			points = ls[3].input["value"]
 			in_url = ls[5].p.a["href"]
 			out_url = ls[6].p.a["href"]
-			test_id = i.findAll("input")[-1]["value"]
-			ret.append((name, time, memory, points, self.szkopul + in_url,
+			tests_desc.append((name, time, memory, points, self.szkopul + in_url,
 			            self.szkopul + out_url))
 
-			form["test_set-" + str(test_num) + "-time_limit"] = time.strip()
-			form["test_set-" + str(test_num) + "-memory_limit"] = memory.strip()
-			form["test_set-" + str(test_num) + "-max_score"] = points.strip()
-			form["test_set-" + str(test_num) + "-is_active"] = "on"
-			form["test_set-" + str(test_num) + "-problem_instance"] = task_ID.strip()
-			form["test_set-" + str(test_num) + "-id"] = test_id.strip()
-			test_num += 1
-
 		if self.info["memoryLimit"] == "":
-			self.info["memoryLimit"] = str(int(ret[0][2]) // 1024) + " MB"
+			self.info["memoryLimit"] = str(int(tests_desc[0][2]) // 1024) + " MB"
 
 		form["round"] = self.round_id
 		form["short_name"] = short.strip()
 		form["submissions_limit"] = "10"
 		form["_save"] = "Zapisz"
-		form["test_set-TOTAL_FORMS"] = str(test_num)
-		form["test_set-INITIAL_FORMS"] = str(test_num)
+		form["test_set-TOTAL_FORMS"] = "0"
+		form["test_set-INITIAL_FORMS"] = "0"
 		form["test_set-MIN_NUM_FORMS"] = "0"
 		form["test_set-MAX_NUM_FORMS"] = "0"
-		form["test_set-__prefix__-time_limit"] = ""
-		form["test_set-__prefix__-memory_limit"] = ""
-		form["test_set-__prefix__-max_score"] = "10"
-		form["test_set-__prefix__-is_active"] = "on"
-		form["test_set-__prefix__-problem_instance"] = task_ID.strip()
-		form["test_set-__prefix__-id"] = ""
+		form["scores_reveal_config-__prefix__-disable_time"] = ""
+		form["scores_reveal_config-__prefix__-id"] = ""
+		form["scores_reveal_config-__prefix__-problem_instance"] = task_ID.strip()
+		form["scores_reveal_config-__prefix__-reveal_limit"] = ""
+		form["scores_reveal_config-TOTAL_FORMS"] = "0"
+		form["scores_reveal_config-INITIAL_FORMS"] = "0"
+		form["scores_reveal_config-MIN_NUM_FORMS"] = "0"
+		form["scores_reveal_config-MAX_NUM_FORMS"] = "1"
 		form["csrfmiddlewaretoken"] = token
 
 		req = requests.Request("POST", link, headers={"Referer" : self.szkopul}, data=form)
@@ -334,7 +326,7 @@ class Paczkarka:
 		res = self.session.send(prepared)
 		bs = BeautifulSoup(self.__htmlPreprocess(res.text), "html5lib")
 
-		return ret
+		return tests_desc
 
 	def __getSolutions(self, task_ID):
 		if self.loged == False:
