@@ -589,15 +589,17 @@ class Paczkarka:
 
 		self.task_dir = self.__tooFileName(search[2]) + "-" \
 		              + self.__tooFileName(search[3]) + "-" \
-		              + self.__tooFileName(self.info["prefix"])
-		self.latex_dir = self.task_dir + "/doc/"
+		              + self.__tooFileName(self.info["prefix"]) + "/"
+		self.latex_dir = self.task_dir + "doc/"
 		self.latex_file = self.info["prefix"] + ".tex"
-		self.pdf_dir = self.task_dir + "/doc/"
+		self.pdf_dir = self.task_dir + "doc/"
 		self.pdf_file = self.info["prefix"] + ".pdf"
-		self.in_dir = self.task_dir + "/in/"
-		self.out_dir = self.task_dir + "/out/"
-		self.prog_dir = self.task_dir + "/prog/"
+		self.in_dir = self.task_dir + "in/"
+		self.out_dir = self.task_dir + "out/"
+		self.prog_dir = self.task_dir + "prog/"
 		self.problem_url = self.problemset_url + "problem/" + search[4]
+
+		self.__makeDir(self.task_dir)
 
 		if argv.pdf:
 			self.__getStatement(argv.no_convert)
